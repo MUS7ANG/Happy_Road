@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "99407959619",
+    "project_id": "winged-quanta-403613",
+    "storage_bucket": "winged-quanta-403613.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99407959619:android:14f00d409567a3c2fe66f6",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4ImpARhhF2kVzkRRhC9ocM7HzEEVHgus"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
