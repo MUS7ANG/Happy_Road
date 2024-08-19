@@ -1,6 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
+import 'package:flutter_app/constants/routes.dart';
+import 'package:flutter_app/services/auth/auth_exceptions.dart';
+import 'package:flutter_app/services/auth/auth_service.dart';
+import '../utilities/show_error.dart';
 
 
 
@@ -57,34 +59,59 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
           TextButton(
-              onPressed: () async {
-                final email = _email.text;
-                final password = _password.text;
-
-                try{
-                  final userCredential =
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: email,
-                      password: password,
-                  );
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
+              try {
+                await AuthService.firebase().logIn(
+                  email: email,
+                  password: password,
+                );
+                final user = AuthService.firebase().currentUser;
+                if (user?.isEmailVerified ?? false) {
+                  // user's email is verified
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/happy/', (route) => false,);
-                } on FirebaseAuthException catch(e){
-                  if(e.code == 'user-not-found'){
-                    devtools.log('USER NOT FOUND');
-                  }else if(e.code == 'wrong-password'){
-                    devtools.log('WRONG PASSWORD');
-                  }
+                    HappyRoute,
+                        (route) => false,
+                  );
+                } else {
+                  // user's email is NOT verified
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    VerifyEmail,
+                        (route) => false,
+                  );
                 }
-              },
-              child: const Text("login")
+              } on UserNotFoundAuthException {
+                await showErrorDialog(
+                  context,
+                  'User not found',
+                );
+              } on WrongPasswordAuthException {
+                await showErrorDialog(
+                  context,
+                  'Wrong credentials',
+                );
+              } on GenericAuthException {
+                await showErrorDialog(
+                  context,
+                  'Authentication error',
+                );
+              }
+            },
+            child: const Text('Login'),
           ),
-        TextButton(onPressed:(){
-        Navigator.of(context).pushNamedAndRemoveUntil('/register/', (route) => false);
-        }, child: const Text("Don't have an account? Register")
-        ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                RegisterRoute,
+                    (route) => false,
+              );
+            },
+            child: const Text('Not registered yet? Register here!'),
+          )
         ],
       ),
     );
   }
 }
+
